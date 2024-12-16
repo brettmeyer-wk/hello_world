@@ -1,0 +1,27 @@
+name: hello_world
+publish_to: https://pub.workiva.org
+version: 0.0.0
+description: hello_world
+homepage: https://github.com/Workiva/hello_world
+
+environment:
+  sdk: '>=2.19.0 <3.0.0'
+
+dev_dependencies:
+  build_runner: ^2.3.3
+  build_test: ^2.2.1
+  build_web_compilers: '>=3.2.7 <5.0.0'
+  dart_dev: ^4.2.2
+  dart_dev_workiva: 
+    hosted:
+      name: dart_dev_workiva
+      url: https://pub.workiva.org
+    version: ^2.8.7
+  dart_style: ^2.3.2
+  dependency_validator: ^3.2.3
+  test: ^1.24.3
+#  tuneup: ^0.3.7
+  # TODO: Make a decision about the need for sass
+#  w_common_tools: ">=1.21.8 <3.0.0"
+  # TODO: end: Make a decision about the need for sass
+  workiva_analysis_options: ^1.1.0

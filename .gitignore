@@ -1,0 +1,15 @@
+# IDE files
+.idea
+.vscode
+
+# Files and directories created by pub
+.dart_tool/
+.packages
+build/
+/pubspec.lock
+/hello_world_test/pubspec.lock
+/hello_world_test/.dart_tool
+/hello_world_test/.packages
+
+# MacOS
+.DS_Store

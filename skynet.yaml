@@ -1,0 +1,156 @@
+name: unit-tests-dev
+description: Unit tests compiled with DDC
+# TODO: Set slack channel
+contact: Contact "slack_channel" slack room for questions regarding these tests.
+
+image: drydock.workiva.net/workiva/dart_unit_test_image:1
+size: medium
+timeout: moderate
+test-reports: /testing/test-reports
+
+scripts:
+  - timeout 5m pub get
+  - pub run dart_dev test --xunit
+
+---
+
+name: unit-tests-release
+description: Unit tests compiled with dart2js
+# TODO: Set slack channel
+contact: Contact "slack_channel" slack room for questions regarding these tests.
+
+image: drydock.workiva.net/workiva/dart_unit_test_image:1
+size: medium
+timeout: moderate
+test-reports: /testing/test-reports
+
+scripts:
+  - timeout 5m pub get
+  - pub run dart_dev test --xunit --release
+
+---
+
+name: check-analysis
+description: Verifies there are no lints which would cause failures or inconsistencies
+# TODO: Set slack channel
+contact: Contact "slack_channel" slack room for questions regarding these checks.
+
+image: drydock.workiva.net/workiva/dart2_base_image:1
+size: small
+timeout: 300
+artifacts:
+  - /testing/artifacts
+
+scripts:
+  - merge_branch.sh master
+  - cd hello_world_test
+  - timeout 5m pub get
+  - cd ..
+  - timeout 5m pub get
+  - dart run dart_dev analyze
+
+---
+
+name: check-formatting
+description: Verifies there are no formatting changes
+# TODO: Set slack channel
+contact: Contact "slack_channel" slack room for questions regarding these checks.
+
+image: drydock.workiva.net/workiva/dart2_base_image:1
+size: small
+timeout: 300
+artifacts:
+  - /testing/artifacts
+
+scripts:
+  - merge_branch.sh master
+  - timeout 5m pub get
+  - dart run dart_dev format --check
+
+---
+
+name: check-dependency_validator
+description: Verifies that the pubspec.yaml is correctly specifying its dependencies
+# TODO: Set slack channel
+contact: Contact "slack_channel" slack room for questions regarding these checks.
+
+image: drydock.workiva.net/workiva/dart2_base_image:1
+size: small
+timeout: 300
+artifacts:
+  - /testing/artifacts
+
+scripts:
+  - merge_branch.sh master
+  - cd hello_world_test
+  - timeout 5m pub get
+  - dart run dependency_validator
+  - cd ..
+  - timeout 5m pub get
+  - dart run dependency_validator
+
+---
+
+name: check-semver_audit
+description: Verifies the semantic versioning of hello_world
+# TODO: Set slack channel
+contact: Contact "slack_channel" slack room for questions regarding these checks.
+
+image: drydock.workiva.net/workiva/dart2_base_image:1
+size: small
+timeout: 300
+artifacts:
+  - /testing/artifacts
+
+scripts:
+  - merge_branch.sh master
+  - timeout 5m pub get
+  - pub global activate --hosted-url https://pub.workiva.org semver_audit ^2.0.3
+  - semver_audit report
+
+---
+
+name: functional-tests
+image: drydock.workiva.net/workiva/skynet-images:puppeteer_dart-latest
+description: Verify hello_world package is working with basic functional tests
+# TODO: Set slack channel
+contact: Contact "slack_channel" slack room for questions regarding these tests.
+timeout: 600
+size: large
+
+run:
+  on-tag: true
+  on-pull-request: true
+  when-branch-name-is:
+    # Necessary to trigger a run on consumer test branches
+    - ^master$ # Trigger for the master branch
+  when-modified-file-name-is:
+    - hello_world_test/*
+    - skynet.yaml
+
+scripts:
+  - |
+    onExit() {
+      dart run w_test_tools:xunit_parser -j /testing/test-reports/results.json -t /testing/test-reports/results.xml
+    };
+
+  - trap onExit EXIT INT TERM
+  - timeout 5m dart pub get
+  - dart run dart_dev serve > /testing/artifacts/webdev_serve_log.txt &
+  - cd hello_world_test
+  - ./tool/wait_for_build.sh
+  - timeout 5m dart pub get
+  - dart run test --file-reporter json:/testing/test-reports/results.json
+
+artifacts:
+  - /testing/artifacts
+  - /testing/screenshots
+  - /testing/videos
+  - /testing/test-reports
+
+
+test-reports:
+  - /testing/test-reports
+
+---
+

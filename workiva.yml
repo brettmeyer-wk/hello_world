@@ -1,0 +1,12 @@
+# https://github.com/Workiva/wk/blob/master/docs/workiva-yml.md
+version: 2
+meta:
+  repo: hello-world
+  tags:
+    organization: Workiva
+    taxonomy_component: TBD
+    team: TBD
+
+services:
+  hello-world:
+    ingress: true

@@ -1,0 +1,9 @@
+timeout: 100ms
+
+paths:
+  - test/unit
+
+custom_html_template_path: test/unit/html_template.html.tpl
+
+platforms:
+  - chrome
